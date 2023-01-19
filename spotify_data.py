@@ -2,7 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 # API keys
 import config
-#Playlists links
+# Playlists links
 import playlists
 from tqdm import tqdm
 import re
@@ -12,10 +12,12 @@ import pandas as pd
 client_credentials_manager = SpotifyClientCredentials(client_id=config.cid, client_secret=config.secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
+
 # %%
 def playlist_df(uri):
-    #track_uris = [x["track"]["uri"] for x in sp.playlist_tracks(uri)["items"]]
-    track_uris=sp.playlist_tracks(uri)["items"]
+    # track_uris = [x["track"]["uri"] for x in sp.playlist_tracks(uri)["items"]]
+
+    track_uris = sp.playlist_tracks(uri)["items"]
     ##Extracting Tracks From a Playlist
     artist_name = []
     artist_pop = []
@@ -23,9 +25,8 @@ def playlist_df(uri):
     popularity = []
     track_id = []
     track_uri = []
-    #for track in sp.playlist_tracks(uri)["items"]:
-    print("Extract songs informations:")
-    for track in tqdm(track_uris):
+    # for track in sp.playlist_tracks(uri)["items"]:
+    for track in track_uris:
         # URI
         track_uri.append(track["track"]["uri"])
 
@@ -46,29 +47,37 @@ def playlist_df(uri):
     tracks_df = pd.DataFrame(
         {'artist_name': artist_name, 'track_name': track_name, 'track_id': track_uri, 'track_uri': track_id,
          'popularity': popularity})
-    #Format URI
+    # Format URI
     tracks_df["track_uri"] = tracks_df["track_uri"].apply(lambda x: re.findall(r'\w+$', x)[0])
     # Get songs features
     featureLIST = []
-    print("Extract songs features:")
-    for track in tqdm(tracks_df["track_uri"]):
+    for track in tracks_df["track_uri"]:
         featureLIST.append(sp.audio_features(track)[0])
     # Preview the DataFrame
     featureDF = pd.DataFrame(featureLIST)
     df = pd.merge(tracks_df, featureDF, left_on="track_uri", right_on="id")
     return df
 
+
 # %%
-playlist_link = "https://open.spotify.com/playlist/4R7d3nxcH5L8lFrnpz5kwg?si=ff9678e085b048d3"
+playlist_link = "https://open.spotify.com/playlist/37i9dQZF1EUMDoJuT8yJsl?si=86e1e8d8626a45a6"
 playlist_URI = playlist_link.split("/")[-1].split("?")[0]
 df = playlist_df(playlist_URI)
 
+track_uris = sp.playlist_tracks(playlist_link)["items"]
 # %%
-
-for key, value in playlists.links.items():
-    playlist_URI = value.split("/")[-1].split("?")[0]
-    df = playlist_df(value)
-    df['year'] = int(key)
+data = pd.DataFrame()
+print("Extract songs features:")
+for key, value in tqdm(playlists.links.items()):
+        playlist_URI = value.split("/")[-1].split("?")[0]
+        df = playlist_df(value)
+        df['year'] = int(key)
+        data = pd.concat([data, df])
+# %%
+data.to_csv('data/my_top_songs.csv')
+#data.to_csv('../data/my_top_songs_2021_2022.csv')
 
 # %%
-df.to_csv('../data/my_top_songs.csv')
+playlist_link = 'https://open.spotify.com/playlist/37i9dQZF1F0sijgNaJdgit?si=b9c96d4fc2234cbd'
+playlist_URI = playlist_link.split("/")[-1].split("?")[0]
+track_uris = sp.playlist_tracks(playlist_link)["items"]
