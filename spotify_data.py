@@ -1,9 +1,10 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
-
+import pandas as pd
 # API keys
 import config
+import playlists
 
 from tqdm import tqdm
 import re
@@ -12,57 +13,61 @@ import re
 client_credentials_manager = SpotifyClientCredentials(client_id=config.cid, client_secret=config.secret)
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
+
 #%%
 playlist_link = "https://open.spotify.com/playlist/4R7d3nxcH5L8lFrnpz5kwg?si=ff9678e085b048d3"
-playlist_URI = playlist_link.split("/")[-1].split("?")[0]
-track_uris = [x["track"]["uri"] for x in sp.playlist_tracks(playlist_URI)["items"]]
-#%% Extracting Tracks From a Playlist
-artist_name = []
-artist_pop= []
-track_name = []
-popularity = []
-track_id = []
-track_uri=[]
-for track in sp.playlist_tracks(playlist_URI)["items"]:
-    #URI
-    track_uri.append(track["track"]["uri"])
 
-    track_id.append(track["track"]['id'])
-    #Track name
-    track_name.append(track["track"]["name"])
+def playlist_df(link):
+    playlist_URI = link.split("/")[-1].split("?")[0]
+    track_uris = [x["track"]["uri"] for x in sp.playlist_tracks(playlist_URI)["items"]]
 
-    #Main Artist
-    artist_uri = track["track"]["artists"][0]["uri"]
-    artist_info = sp.artist(artist_uri)
+    #%% Extracting Tracks From a Playlist
+    artist_name = []
+    artist_pop= []
+    track_name = []
+    popularity = []
+    track_id = []
+    track_uri=[]
+    for track in sp.playlist_tracks(playlist_URI)["items"]:
+        #URI
+        track_uri.append(track["track"]["uri"])
 
-    #Name, popularity, genre
-    artist_name.append(track["track"]["artists"][0]["name"])
-    artist_pop.append(artist_info["popularity"])
+        track_id.append(track["track"]['id'])
+        #Track name
+        track_name.append(track["track"]["name"])
 
-    #Popularity of the track
-    popularity.append(track["track"]["popularity"])
+        #Main Artist
+        artist_uri = track["track"]["artists"][0]["uri"]
+        artist_info = sp.artist(artist_uri)
+
+        #Name, popularity, genre
+        artist_name.append(track["track"]["artists"][0]["name"])
+        artist_pop.append(artist_info["popularity"])
+
+        #Popularity of the track
+        popularity.append(track["track"]["popularity"])
+
+
+    tracks_df = pd.DataFrame({'artist_name' : artist_name, 'track_name' : track_name, 'track_id' : track_uri, 'track_uri' : track_id, 'popularity' : popularity})
+
+
+    #%%
+    tracks_df["track_uri"] = tracks_df["track_uri"].apply(lambda x: re.findall(r'\w+$', x)[0])
+    featureLIST = []
+    for track in tqdm(tracks_df["track_uri"]):
+        featureLIST.append(sp.audio_features(track)[0])
+    #Preview the DataFrame
+    featureDF = pd.DataFrame(featureLIST)
+    df = pd.merge(df,featureDF, left_on = "track_uri", right_on= "id")
 
 #%%
-import pandas as pd
-track_dataframe = pd.DataFrame({'artist_name' : artist_name, 'track_name' : track_name, 'track_id' : track_uri, 'track_uri' : track_id, 'popularity' : popularity})
-print(track_dataframe.shape)
-track_dataframe.head()
-df=track_dataframe
+for key,value in playlists.links.items():
+    print(key,value)
 #%%
-df["track_uri"] = df["track_uri"].apply(lambda x: re.findall(r'\w+$', x)[0])
-df["track_uri"]
-featureLIST = []
-for track in df["track_uri"]:
-    featureLIST.append(sp.audio_features(track)[0])
-#%%
-featureLIST = []
-for track in tqdm(df["track_uri"]):
-    featureLIST.append(sp.audio_features(track)[0])
+playlist_URI = link.split("/")[-1].split("?")[0]
 
-#Preview the DataFrame
-featureDF = pd.DataFrame(featureLIST)
-featureDF
-#%%
-new_df = pd.merge(df,featureDF, left_on = "track_uri", right_on= "id")
 
+df['year']='abc'
+new_df.to_csv('../data/processed_data.csv')
+#%%
 new_df.to_csv('../data/processed_data.csv')
