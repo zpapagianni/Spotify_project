@@ -72,25 +72,20 @@ From [Spotify's API documentation](https://developer.spotify.com/documentation/w
 
 ```
 │
-├── README.md          <- The top-level README with instructions.
+├── README.md              <- The top-level README with instructions.
 ├── data
-│   ├── my_top_songs.csv    <- The original data set containing my top songs from 2016 to 2022.
+│   ├── my_top_songs.csv   <- The original data set containing my top songs from 2016 to 2022.
 │   ├── processed      <- The preprocessed data sets for training.
 │   ├── test           <- The test data sets for testing.
 │   └── final          <- The final data sets for modeling.
 │
-├── playlists.py             <- Dictionary with links to my top songs playlists.
+├── playlists.py            
 │
-├── notebooks          <- Serialized Jupyter notebooks created in the project.
-│   ├── script         <- Script for data extraction and loading data
-│   ├── Extraction     <- Data extraction using Spotify API
-│   ├── EDA            <- Exploratory data analysis process.
-│   └── Recsys         <- The training of traditional statistical models.
-│
-├── recommendation_app <- Model deployment folder
-│   ├── application    <- Code for model deployment and website design
-│   ├── data1          <- Pretrained data for model
-│   └── venv           <- Environment
-│
+├── notebooks               <- Jupyter notebooks created in the project.
+│   ├── playlists.py        <- File containing dictionary with links to my top songs playlists.
+│   ├── data_extraction.py  <- Script for data extraction and loading data
+│   ├── Extraction          <- Data extraction using Spotify API
+│   └──  EDA                <- Exploratory data analysis process.
+
 └── requirements.txt   <- The requirements file for reproducing the analysis environment.
 ```

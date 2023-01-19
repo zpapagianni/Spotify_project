@@ -51,7 +51,8 @@ def playlist_df(uri):
 
         # Popularity of the track
         popularity.append(track["track"]["popularity"])
-        # Create dataframe
+
+    # Create dataframe
     tracks_df = pd.DataFrame(
         {'artist_name': artist_name, 'artist_pop': artist_pop, 'artist_genres': artist_genres,
          'track_name': track_name, 'track_id': track_id, 'track_uri': track_uri, 'popularity': popularity})
@@ -62,7 +63,7 @@ def playlist_df(uri):
     feature_list = []
     for track in tracks_df["track_uri"]:
         feature_list.append(sp.audio_features(track)[0])
-    # Preview the DataFrame
+    # Create DataFrame
     feature_df = pd.DataFrame(feature_list)
     # Merge dataframes
     df = pd.merge(tracks_df, feature_df, left_on="track_uri", right_on="id")
@@ -77,15 +78,16 @@ print("Extract songs features from each playlist:")
 for key, value in tqdm(playlists.links.items()):
     # Get playlists URI
     playlist_URI = value.split("/")[-1].split("?")[0]
-    # Get dataframe with the feautures of each song
+    # Get dataframe with the features of each song
     df = playlist_df(value)
-    # Add column representing the year
+    # Add column to store year
     df['year'] = int(key)
     # Add dataframe to data
     data = pd.concat([data, df])
+
 print("Done")
 print(data.shape)
 
 # %%
 ## Save file to data folder
-data.to_csv('data/my_top_songs.csv')
+data.to_csv('./data/my_top_songs.csv')
