@@ -84,8 +84,8 @@ From [Spotify's API documentation](https://developer.spotify.com/documentation/w
 ├── notebooks               <- Jupyter notebooks created in the project.
 │   ├── playlists.py        <- File containing dictionary with links to my top songs playlists.
 │   ├── data_extraction.py  <- Script for data extraction and loading data
-│   ├── Extraction          <- Data extraction using Spotify API
-│   └──  EDA                <- Exploratory data analysis process.
+│   ├── Extraction.ipynb          <- Data extraction using Spotify API
+│   └── EDA-clustering.ipynb               <- Exploratory data analysis process.
 
 └── requirements.txt   <- The requirements file for reproducing the analysis environment.
 ```
