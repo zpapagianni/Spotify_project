@@ -4,8 +4,7 @@ I am a HUGE fan of music and I wanted to see how my taste has changed from 2016 
 and transitions.I found out about [Spotify's Web API](https://developer.spotify.com/documentation/web-api/) and
 I wanted to use it to get information about my favorite songs. I retrieved my listening history from Spotify's Web API 
 to see how my top songs have changed over the last 7 years.
-To accomplish this, I used Python and various data analysis libraries to retrieve and analyze my listening history from Spotify.
-I also used data visualization techniques to present my findings in an easily understandable format. Additionally, I will be incorporating 
+To accomplish this, I used Python to retrieve and analyze my listening history from Spotify API. I also used data visualization techniques to present my findings in an easily understandable format. Additionally, I will be incorporating 
 information about the different stages of my life into the analysis. 
 This will allow me to understand how my music taste may have been influenced by life events 
 such as graduating, experiencing my first heartbreak, moving to a new city or starting a new job. 
