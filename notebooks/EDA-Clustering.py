@@ -285,3 +285,30 @@ ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
 
 
 #%%
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+
+cluster_pipeline = Pipeline([('scaler', StandardScaler()), ('kmeans', KMeans(n_clusters=10))])
+X = songs.select_dtypes(np.number)
+cluster_pipeline.fit(X)
+songs['cluster'] = cluster_pipeline.predict(X)
+
+
+from sklearn.manifold import TSNE
+
+tsne_pipeline = Pipeline([('scaler', StandardScaler()), ('tsne', TSNE(n_components=2, verbose=1))])
+genre_embedding = tsne_pipeline.fit_transform(X)
+projection = pd.DataFrame(columns=['x', 'y'], data=genre_embedding)
+projection['genres'] = songs['artist_genres']
+projection['cluster'] = songs['cluster']
+
+fig = px.scatter(
+    projection, x='x', y='y', color='cluster', hover_data=['x', 'y', 'genres'])
+fig.update_layout(legend=dict(
+    yanchor="top",
+    y=0.99,
+    xanchor="left",
+    x=0.01
+))
+fig.show()
